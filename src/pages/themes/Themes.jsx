@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Button, Row, Col } from 'antd';
 
-import EditableTable from '../../assets/components/EditableTable';
+import EditableTableTheme from '../../assets/components/EditableTableTheme';
 
 const Themes = () => (
   <div>
@@ -18,7 +18,7 @@ const Themes = () => (
     </Row>
     <Row gutter={16}>
       <Col span={22}>
-        <EditableTable />
+        <EditableTableTheme />
       </Col>
     </Row>
   </div>
