@@ -1,5 +1,7 @@
 import React from 'react';
-import { Table, Button, Popconfirm, Form, Input } from 'antd';
+import { Table, Button, Popconfirm, Form, Input, Modal } from 'antd';
+
+import api from '../../config/axios';
 
 const EditableContext = React.createContext();
 
@@ -26,13 +28,13 @@ class EditableCell extends React.Component {
   };
 
   save = (e) => {
-    const { record, handleSave } = this.props;
+    const { record, handleCellSave } = this.props;
     this.form.validateFields((error, values) => {
       if (error && error[e.currentTarget.id]) {
         return;
       }
       this.toggleEdit();
-      handleSave({ ...record, ...values });
+      handleCellSave({ ...record, ...values });
     });
   };
 
@@ -46,7 +48,7 @@ class EditableCell extends React.Component {
           rules: [
             {
               required: true,
-              message: `${title} is required.`,
+              message: `${title} é obrigatório.`,
             },
           ],
           initialValue: record[dataIndex],
@@ -70,7 +72,7 @@ class EditableCell extends React.Component {
       title,
       record,
       index,
-      handleSave,
+      handleCellSave,
       children,
       ...restProps
     } = this.props;
@@ -98,71 +100,70 @@ class EditableTableTheme extends React.Component {
       },
       {
         dataIndex: 'operation',
-        render: (text, record) =>
-          (this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Confirma a edição?" onConfirm={() => this.handleDelete(record.key)}>
-              <Button shape="circle" icon="save" theme="twoTone" className="display-center" />
-            </Popconfirm>
-          ) : null),
+        render: (text, record) => (
+          <Popconfirm title="Confirma a edição?" onConfirm={() => this.handleAdd(record)}>
+              <Button shape="circle" icon="save" theme="twoTone" />
+          </Popconfirm>
+        )
       },
       {
-        dataIndex: 'operation',
-        render: (text, record) =>
-          (this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Confirma a deleção?" onConfirm={() => this.handleDelete(record.key)}>
-              <Button shape="circle" icon="delete" theme="twoTone" />
-            </Popconfirm>
-          ) : null),
+        dataIndex: 'deletion',
+        render: (text, record) => (
+          <Popconfirm title="Confirma a deleção?" onConfirm={() => this.handleDelete(record.id)}>
+            <Button shape="circle" icon="delete" theme="twoTone" />
+          </Popconfirm>
+        )
       },
     ];
 
     this.state = {
-      dataSource: [
-        {
-          key: '0',
-          name: 'Vocabulário',
-        },
-        {
-          key: '1',
-          name: 'Gramática',
-        },
-      ],
-      count: 2,
+      visibleError: false,
     };
   }
 
-  handleDelete = (key) => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-  };
-
-  handleAdd = () => {
-    const { count, dataSource } = this.state;
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: 32,
-      address: `London, Park Lane no. ${count}`,
-    };
-    this.setState({
-      dataSource: [...dataSource, newData],
-      count: count + 1,
+  handleDelete = (id) => {
+    api.delete(`/themes/${id}`)
+      .then(() => {
+        this.props.onHandleDataSource(this.props.dataSource.filter(item => item.id !== id));
+      })
+      .catch(() => {
+        this.handleVisibleError(true);
     });
   };
 
-  handleSave = (row) => {
-    const newData = [...this.state.dataSource];
-    const index = newData.findIndex(item => row.key === item.key);
+  handleAdd = (row) => {
+    api.put(`/themes/${row.id}`, {
+      name: row.name
+    })
+    .then((response) => {
+      this.setState({input: ''});
+      this.handleSearch();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
+
+  handleCellSave = (row) => {
+    const newData = [...this.props.dataSource];
+    const index = newData.findIndex(item => row.id === item.id);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    this.setState({ dataSource: newData });
+
+    this.props.onHandleDataSource(newData);
+  };
+
+  handleVisibleError = visibleError => {
+    this.setState({
+      visibleError,
+    })
   };
 
   render() {
-    const { dataSource } = this.state;
+    const { dataSource } = this.props;
     const components = {
       body: {
         row: EditableFormRow,
@@ -180,7 +181,7 @@ class EditableTableTheme extends React.Component {
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
-          handleSave: this.handleSave,
+          handleCellSave: this.handleCellSave,
         }),
       };
     });
@@ -193,6 +194,19 @@ class EditableTableTheme extends React.Component {
           dataSource={dataSource}
           columns={columns}
         />
+        <Modal
+          title="Erro ao deletar"
+          visible={this.state.visibleError}
+          closable={false}
+          footer={[
+            <Button key="ok" type="primary" onClick={() => this.handleVisibleError(false)}>
+              Ok
+            </Button>,
+          ]}
+        >
+          <p>Não foi possível deletar o tema.</p>
+          <p>Verifique se o mesmo tem conteúdos atrelados.</p>
+        </Modal>
       </div>
     );
   }
