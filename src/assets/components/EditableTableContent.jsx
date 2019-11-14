@@ -1,91 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Table, Button, Popconfirm, Form, Input } from 'antd';
+import { Table, Button, Popconfirm, Modal } from 'antd';
 
-const EditableContext = React.createContext();
-
-const EditableRow = ({ form, index, ...props }) => (
-  <EditableContext.Provider value={form}>
-    <tr {...props} />
-  </EditableContext.Provider>
-);
-
-const EditableFormRow = Form.create()(EditableRow);
-
-class EditableCell extends React.Component {
-  state = {
-    editing: false,
-  };
-
-  toggleEdit = () => {
-    const editing = !this.state.editing;
-    this.setState({ editing }, () => {
-      if (editing) {
-        this.input.focus();
-      }
-    });
-  };
-
-  save = (e) => {
-    const { record, handleSave } = this.props;
-    this.form.validateFields((error, values) => {
-      if (error && error[e.currentTarget.id]) {
-        return;
-      }
-      this.toggleEdit();
-      handleSave({ ...record, ...values });
-    });
-  };
-
-  renderCell = (form) => {
-    this.form = form;
-    const { children, dataIndex, record, title } = this.props;
-    const { editing } = this.state;
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>
-        {form.getFieldDecorator(dataIndex, {
-          rules: [
-            {
-              required: true,
-              message: `${title} is required.`,
-            },
-          ],
-          initialValue: record[dataIndex],
-        })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
-      >
-        {children}
-      </div>
-    );
-  };
-
-  render() {
-    const {
-      editable,
-      dataIndex,
-      title,
-      record,
-      index,
-      handleSave,
-      children,
-      ...restProps
-    } = this.props;
-    return (
-      <td {...restProps}>
-        {editable ? (
-          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
-        ) : (
-          children
-        )}
-      </td>
-    );
-  }
-}
+import api from '../../config/axios';
 
 class EditableTableContent extends React.Component {
   constructor(props) {
@@ -95,105 +12,56 @@ class EditableTableContent extends React.Component {
         title: 'Nome',
         dataIndex: 'name',
         width: '55%',
-        editable: true,
       },
       {
         title: 'Tema',
-        dataIndex: 'theme',
+        dataIndex: 'themeName',
         width: '25%',
       },
       {
         dataIndex: 'operation',
-        render: () =>
-          (
+        render: () => (
             <NavLink to="/levels">
               <Button shape="circle" icon="edit" theme="twoTone" className="display-center" />
-            </NavLink>),
+            </NavLink>
+        ),
       },
       {
-        dataIndex: 'operation',
-        render: (text, record) =>
-          (this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Confirma a deleção?" onConfirm={() => this.handleDelete(record.key)}>
-              <Button shape="circle" icon="delete" theme="twoTone" />
-            </Popconfirm>
-          ) : null),
+        dataIndex: 'deletion',
+        render: (text, record) => (
+          <Popconfirm title="Confirma a deleção?" onConfirm={() => this.handleDelete(record.id)}>
+            <Button shape="circle" icon="delete" theme="twoTone" />
+          </Popconfirm>
+        )
       },
     ];
 
     this.state = {
-      dataSource: [
-        {
-          key: '0',
-          name: 'Partes da Aeronave',
-          theme: 'Vocabulário',
-        },
-        {
-          key: '1',
-          name: 'Danos',
-          theme: 'Vocabulário',
-        },
-        {
-          key: '2',
-          name: 'Características técnicas',
-          theme: 'Vocabulário',
-        },
-        {
-          key: '3',
-          name: 'Modais',
-          theme: 'Gramática',
-        },
-        {
-          key: '4',
-          name: 'Presente Simples',
-          theme: 'Gramática',
-        },
-        {
-          key: '5',
-          name: 'Elementos de referência',
-          theme: 'Gramática',
-        },
-      ],
-      count: 2,
+      visibleError: false,
     };
   }
 
-  handleDelete = (key) => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+  handleDelete = (id) => {
+    api.delete(`/contents/${id}`)
+      .then(() => {
+        this.props.onHandleDataSource(this.props.dataSource.filter(item => item.id !== id));
+      })
+      .catch(() => {
+        this.handleVisibleError(true);
+    });
   };
 
-  handleAdd = () => {
-    const { count, dataSource } = this.state;
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: 32,
-      address: `London, Park Lane no. ${count}`,
-    };
+  handleVisibleError = visibleError => {
     this.setState({
-      dataSource: [...dataSource, newData],
-      count: count + 1,
-    });
-  };
-
-  handleSave = (row) => {
-    const newData = [...this.state.dataSource];
-    const index = newData.findIndex(item => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-    this.setState({ dataSource: newData });
+      visibleError,
+    })
   };
 
   render() {
-    const { dataSource } = this.state;
+    const { dataSource } = this.props;
     const components = {
       body: {
-        row: EditableFormRow,
-        cell: EditableCell,
+        
       },
     };
     const columns = this.columns.map((col) => {
@@ -220,6 +88,19 @@ class EditableTableContent extends React.Component {
           dataSource={dataSource}
           columns={columns}
         />
+        <Modal
+            title="Erro ao deletar"
+            visible={this.state.visibleError}
+            closable={false}
+            footer={[
+              <Button key="ok" type="primary" onClick={() => this.handleVisibleError(false)}>
+                Ok
+              </Button>,
+            ]}
+        >
+            <p>Não foi possível deletar o conteúdo.</p>
+            <p>Verifique se o mesmo tem perguntas/testes atrelados.</p>
+        </Modal>
       </div>
     );
   }
