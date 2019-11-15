@@ -2,7 +2,7 @@ import React from 'react';
 import { Input, Button, Row, Col } from 'antd';
 
 import EditableTableTheme from '../../assets/components/EditableTableTheme';
-import api from '../../config/axios';
+import api from '../../services/api';
 
 class Themes extends React.Component {
   state = {

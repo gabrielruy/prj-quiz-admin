@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Table, Button, Popconfirm, Modal } from 'antd';
 
-import api from '../../config/axios';
+import api from '../../services/api';
 
 class EditableTableContent extends React.Component {
   constructor(props) {

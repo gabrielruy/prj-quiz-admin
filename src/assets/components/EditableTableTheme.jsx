@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Button, Popconfirm, Form, Input, Modal } from 'antd';
 
-import api from '../../config/axios';
+import api from '../../services/api';
 
 const EditableContext = React.createContext();
 

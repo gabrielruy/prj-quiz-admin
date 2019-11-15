@@ -2,7 +2,7 @@ import React from 'react';
 import { Input, Button, Row, Col, Select, Modal } from 'antd';
 
 import EditableTableContent from '../../assets/components/EditableTableContent';
-import api from '../../config/axios';
+import api from '../../services/api';
 
 const { Option } = Select;
 

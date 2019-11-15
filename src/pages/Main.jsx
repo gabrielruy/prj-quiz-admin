@@ -25,23 +25,27 @@ const { Content } = Layout;
 
 const Main = () => (
   <Router>
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sidebar />
-      <Layout>
-        <Header />
-        <Content style={{ margin: '16px 16px 0 16px' }}>
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/themes" component={Themes} />
-            <Route exact path="/contents" component={Contents} />
-            <Route exact path="/levels" component={Levels} />
-            <Route exact path="/login" component={SignIn} />
-            <Route component={NotFound} />
-          </Switch>
-        </Content>
-        <Footer />
-      </Layout>
-    </Layout>
+    <Switch>
+      <Route exact path="/login" component={SignIn} />
+      <Route>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sidebar />
+          <Layout>
+            <Header />
+            <Content style={{ margin: '16px 16px 0 16px' }}>
+              <Switch>
+                <Route exact path="/" component={Home} />
+                <Route exact path="/themes" component={Themes} />
+                <Route exact path="/contents" component={Contents} />
+                <Route exact path="/levels" component={Levels} />
+                <Route component={NotFound} />
+              </Switch>
+            </Content>
+            <Footer />
+          </Layout>
+        </Layout>
+      </Route>
+    </Switch>
   </Router>
 );
 
