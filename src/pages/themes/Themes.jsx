@@ -29,7 +29,7 @@ class Themes extends React.Component {
   }
 
   handleSearch = () => {
-    api.get(`/themes?themeName=${this.state.input}`)
+    api.get(`/themes?name=${this.state.input}`)
       .then((response) => {
         this.setState({ dataSource: response.data });
       })

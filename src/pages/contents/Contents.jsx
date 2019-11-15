@@ -55,7 +55,7 @@ class Contents extends React.Component {
     if (this.state.selectedTheme > 0) {
       this.searchWithContentNameAndThemeId();
     } else {
-      api.get(`/contents?contentName=${this.state.input}`)
+      api.get(`/contents?name=${this.state.input}`)
       .then((response) => {
         const contentsFromApi = response.data.map((item) => ({
           id: item.id,
@@ -119,7 +119,7 @@ class Contents extends React.Component {
   };
 
   searchWithContentNameAndThemeId = () => {
-    api.get(`/contents?themeId=${this.state.selectedTheme}&contentName=${this.state.input}`)
+    api.get(`/contents?themeId=${this.state.selectedTheme}&name=${this.state.input}`)
       .then((response) => {
         const contentsFromApi = response.data.map((item) => ({
           id: item.id,

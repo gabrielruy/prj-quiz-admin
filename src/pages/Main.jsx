@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
+  Redirect,
 } from 'react-router-dom';
 
 import { Layout } from 'antd';
@@ -19,9 +20,23 @@ import Levels from './levels/Levels';
 import NotFound from './notFound/NotFound';
 import SignIn from './signIn/SignIn';
 
+import { isAuthenticated } from '../services/auth';
 import '../assets/styles/styles.css';
 
 const { Content } = Layout;
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      (isAuthenticated() ? (
+        <Component {...props} />
+      ) : (
+        <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+      ))
+    }
+  />
+);
 
 const Main = () => (
   <Router>
@@ -34,11 +49,11 @@ const Main = () => (
             <Header />
             <Content style={{ margin: '16px 16px 0 16px' }}>
               <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/themes" component={Themes} />
-                <Route exact path="/contents" component={Contents} />
-                <Route exact path="/levels" component={Levels} />
-                <Route component={NotFound} />
+                <PrivateRoute exact path="/" component={Home} />
+                <PrivateRoute exact path="/themes" component={Themes} />
+                <PrivateRoute exact path="/contents" component={Contents} />
+                <PrivateRoute exact path="/levels" component={Levels} />
+                <PrivateRoute component={NotFound} />
               </Switch>
             </Content>
             <Footer />
