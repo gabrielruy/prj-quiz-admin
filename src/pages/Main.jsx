@@ -17,6 +17,7 @@ import Themes from './themes/Themes';
 import Contents from './contents/Contents';
 import Levels from './levels/Levels';
 import NotFound from './notFound/NotFound';
+import SignIn from './signIn/SignIn';
 
 import '../assets/styles/styles.css';
 
@@ -34,6 +35,7 @@ const Main = () => (
             <Route exact path="/themes" component={Themes} />
             <Route exact path="/contents" component={Contents} />
             <Route exact path="/levels" component={Levels} />
+            <Route exact path="/login" component={SignIn} />
             <Route component={NotFound} />
           </Switch>
         </Content>
