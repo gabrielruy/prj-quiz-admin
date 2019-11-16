@@ -33,13 +33,17 @@ class SignIn extends Component {
       this.setState({ error: 'Preencha e-mail e senha para continuar!' });
     } else {
       try {
+        const isAdmin = await api.get(`/users/is-admin?email=${email}`);
+        if (!isAdmin.data) {
+          throw Error('Não é um administrador');
+        }
         const response = await api.post('/login', { email, password });
         login(response.data);
         this.props.history.push('/');
       } catch (err) {
         this.setState({
           error:
-            'Houve um problema com o login, verifique suas credenciais. T.T',
+            'Houve um problema com o login, verifique suas credenciais.',
         });
       }
     }
