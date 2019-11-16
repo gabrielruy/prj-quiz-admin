@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { Spin } from 'antd';
 
 import Logo from '../../assets/logo/IFSP_Logo.jpg';
 
@@ -12,6 +13,7 @@ class SignIn extends Component {
     email: '',
     password: '',
     error: '',
+    loading: false,
   };
 
   // redirect = () => (
@@ -26,10 +28,16 @@ class SignIn extends Component {
     this.setState({ password });
   }
 
+  handleLoadingChange = (loading) => {
+    this.setState({ loading });
+  }
+
   handleSignIn = async (e) => {
     e.preventDefault();
+    this.handleLoadingChange(true);
     const { email, password } = this.state;
     if (!email || !password) {
+      this.handleLoadingChange(false);
       this.setState({ error: 'Preencha e-mail e senha para continuar!' });
     } else {
       try {
@@ -39,8 +47,10 @@ class SignIn extends Component {
         }
         const response = await api.post('/login', { email, password });
         login(response.data);
+        this.handleLoadingChange(false);
         this.props.history.push('/');
       } catch (err) {
+        this.handleLoadingChange(false);
         this.setState({
           error:
             'Houve um problema com o login, verifique suas credenciais.',
@@ -67,7 +77,9 @@ class SignIn extends Component {
             placeholder="Senha"
             onChange={e => this.handlePasswordChange(e.target.value)}
           />
-          <button type="submit">Entrar</button>
+          <button type="submit" disabled={this.state.loading}>
+            {this.state.loading ? <Spin /> : 'Entrar'}
+          </button>
         </form>
       </div>
     );
