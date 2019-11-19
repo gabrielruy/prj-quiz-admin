@@ -87,6 +87,7 @@ class TableContent extends React.Component {
           bordered
           dataSource={dataSource}
           columns={columns}
+          pagination={false}
         />
         <Modal
             title="Erro ao deletar"
