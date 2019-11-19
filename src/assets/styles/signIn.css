@@ -1,11 +1,11 @@
-.Container {
+.container-login {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
 }
 
-.Form {
+.form-login {
   width: 400px;
   background: #fff;
   padding: 20px;
@@ -15,7 +15,7 @@
 }
 
 /* Preencha email e senha para continuar */
-p {
+.p-login {
   color: #ff3333;
   margin-bottom: 15px;
   border: 1px solid #ff3333;
@@ -24,7 +24,7 @@ p {
   text-align: center;
 }
 
-input {
+.input-login {
   height: 46px;
   margin-bottom: 15px;
   padding: 0 20px;
@@ -34,7 +34,7 @@ input {
   border: 1px solid #ddd;
 }
 
-button {
+.button-login {
   color: #fff;
   font-size: 16px;
   background: #45b045;
@@ -44,17 +44,9 @@ button {
   width: 100%;
 }
 
-hr {
+.hr-login {
   margin: 20px 0;
   border: none;
   border-bottom: 1px solid #cdcdcd;
   width: 100%;
-}
-
-/* Criar conta */
-a { 
-  font-size: 16;
-  font-weight: bold;
-  color: #999;
-  text-decoration: none;
 }

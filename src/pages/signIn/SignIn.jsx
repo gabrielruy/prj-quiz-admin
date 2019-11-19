@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'antd';
 
-import Logo from '../../assets/logo/IFSP_Logo.jpg';
+// import Logo from '../../assets/logo/'
 
 import '../../assets/styles/signIn.css';
 import { login } from '../../services/auth';
@@ -15,10 +15,6 @@ class SignIn extends Component {
     error: '',
     loading: false,
   };
-
-  // redirect = () => (
-  //   this.props.history.push("/home")
-  // );
 
   handleEmailChange = (email) => {
     this.setState({ email });
@@ -61,23 +57,25 @@ class SignIn extends Component {
 
   render() {
     return (
-      <div className="Container">
-        <form className="Form" onSubmit={this.handleSignIn}>
-          {/* <img src={Logo} alt="IFSP logo" /> */}
-          {this.state.error && <p>{this.state.error}</p>}
+      <div className="container-login">
+        <form className="form-login" onSubmit={this.handleSignIn}>
+          <img src={'https://d1lpyqedjaq3m8.cloudfront.net/aprova/arquivosconcursos/instituicoes/2019/04/1555013207.jpg'} alt="IFSP logo" />
+          {this.state.error && <p className="p-login">{this.state.error}</p>}
           <input
+            className="input-login"
             type="email"
             value={this.state.email}
             placeholder="Endereço de e-mail"
             onChange={e => this.handleEmailChange(e.target.value)}
           />
           <input
+            className="input-login"
             type="password"
             value={this.state.password}
             placeholder="Senha"
             onChange={e => this.handlePasswordChange(e.target.value)}
           />
-          <button type="submit" disabled={this.state.loading}>
+          <button className="button-login" type="submit" disabled={this.state.loading}>
             {this.state.loading ? <Spin /> : 'Entrar'}
           </button>
         </form>

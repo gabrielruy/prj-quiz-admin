@@ -4,7 +4,7 @@ import { Table, Button, Popconfirm, Modal } from 'antd';
 
 import api from '../../services/api';
 
-class EditableTableContent extends React.Component {
+class TableContent extends React.Component {
   constructor(props) {
     super(props);
     this.columns = [
@@ -106,4 +106,4 @@ class EditableTableContent extends React.Component {
   }
 }
 
-export default EditableTableContent;
+export default TableContent;

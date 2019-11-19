@@ -46,7 +46,7 @@ class SidebarComponent extends Component {
             <Icon type="question-circle" />
             {
               !this.state.collapsed &&
-              <span className="fade-in"> Quiz</span>
+              <span className="fade-in">   Quiz - IFSP</span>
             }
           </div>
         </div>
@@ -67,10 +67,6 @@ class SidebarComponent extends Component {
               <Icon type="desktop" />
               <span>Conteúdo</span>
             </NavLink>
-          </Menu.Item>
-          <Menu.Item key="12">
-            <Icon type="inbox" />
-            <Badge count={1}><span>Dúvidas</span></Badge>
           </Menu.Item>
         </Menu>
       </Sider>

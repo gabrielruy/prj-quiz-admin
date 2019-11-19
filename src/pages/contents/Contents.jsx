@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Button, Row, Col, Select, Modal } from 'antd';
 
-import EditableTableContent from '../../assets/components/EditableTableContent';
+import TableContent from '../../assets/components/TableContent';
 import api from '../../services/api';
 
 const { Option } = Select;
@@ -173,7 +173,7 @@ class Contents extends React.Component {
         </Row>
         <Row gutter={16}>
           <Col span={22}>
-            <EditableTableContent 
+            <TableContent 
               dataSource={this.state.dataSource}
               onHandleDataSource={this.handleDataSource}
             />
