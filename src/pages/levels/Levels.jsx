@@ -23,8 +23,10 @@ class Levels extends Component {
     // visible: false, 
     // visibleTest: false,
     contentId: 0,
+    selectedTheme: 0,
     content: [],
     levels: [],
+    themes: [],
   };
 
   // showModal = () => {
@@ -70,18 +72,26 @@ class Levels extends Component {
     api.get(`/contents/${id}`)
       .then((response) => {
         this.setState({ content: response.data });
-
-        console.log("this.state.content.theme.name: " , this.state.content.theme.name);
+        this.setState({ selectedTheme: response.data.theme.id });
       })
       .catch((error) => {
         console.log(error);
-      });
+    });
+
+    api.get(`/themes`)
+      .then((response) => {
+        let themesFromApi = response.data.map(theme => { return {id: theme.id, themeName: theme.name} });
+
+        this.setState({ themes: themesFromApi, });
+      })
+      .catch(error => {
+        console.log(error);
+    });
   }
 
   render() {
       return (
         <div>
-          <h1>Hello, {this.state.contentId}</h1>
           <Row gutter={16}>
             <Col span={16}>
               <Input
@@ -97,22 +107,23 @@ class Levels extends Component {
                 filterOption={(input, option) =>
                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
-                value={this.state.content.theme}
+                value={this.state.selectedTheme}
                 // onChange={(e) => {
                 //   this.setState({ selectedTheme: e }, () => {
                 //     this.handleChangeOnTheme(this.state.selectedTheme);
                 //   });
                 // }}
               >
-                {/* {this.state.themes.map((theme) => 
+                {this.state.themes.map((theme) => 
                   <Option value={theme.id}>{theme.themeName}</Option>
-                )} */}
+                )}
               </Select>
             </Col>
             <Col span={1}>
-              <Button type="primary" shape="circle" icon="plus" onClick={this.handleAdd}/>
+              <Button type="primary" shape="circle" icon="save" onClick={this.handleAdd}/>
             </Col>
           </Row>
+
           <Row gutter={16}>
             <Col span={22}>
               <Collapse bordered={false} className="input">
