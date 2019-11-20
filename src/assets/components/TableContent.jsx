@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Table, Button, Popconfirm, Modal } from 'antd';
 
 import api from '../../services/api';
@@ -20,10 +20,8 @@ class TableContent extends React.Component {
       },
       {
         dataIndex: 'operation',
-        render: () => (
-            <NavLink to="/levels">
-              <Button shape="circle" icon="edit" theme="twoTone" className="display-center" />
-            </NavLink>
+        render: (text, record) => (
+          <Button shape="circle" icon="edit" theme="twoTone" className="display-center" onClick={() => this.showContentCrud(record.id)} />
         ),
       },
       {
@@ -39,6 +37,13 @@ class TableContent extends React.Component {
     this.state = {
       visibleError: false,
     };
+  }
+
+  showContentCrud = (id) => {
+    this.props.history.push({
+      pathname: '/levels', 
+      contentId: id
+    });
   }
 
   handleDelete = (id) => {
@@ -107,4 +112,4 @@ class TableContent extends React.Component {
   }
 }
 
-export default TableContent;
+export default withRouter(TableContent);
