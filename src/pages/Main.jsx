@@ -10,7 +10,7 @@ import {
 import { Layout } from 'antd';
 
 import Header from '../layout/headerComponent/HeaderComponent';
-import Footer from '../layout/footerComponent/FooterComponent';
+// import Footer from '../layout/footerComponent/FooterComponent';
 import Sidebar from '../layout/sidebarComponent/SidebarComponent';
 
 import Home from './home/Home';
@@ -56,7 +56,7 @@ const Main = () => (
                 <PrivateRoute component={NotFound} />
               </Switch>
             </Content>
-            <Footer />
+            {/* <Footer /> */}
           </Layout>
         </Layout>
       </Route>
