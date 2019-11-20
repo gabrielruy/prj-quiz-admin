@@ -1,11 +1,12 @@
 {
-  "name": "odds-reactor",
+  "name": "prj-quiz-admin",
   "version": "1.0.0",
-  "description": "ODDS - One Day Development Stack",
+  "description": "Quiz - IFSP",
   "main": "index.js",
-  "repository": "https://github.com/FerJSsilva/Odds-Reactor.git",
-  "author": "Fernando JS Silva <development.ferjssilva@gmail.com>",
   "license": "MIT",
+  "engines": {
+      "node": "10.16.3"
+   },
   "scripts": {
     "start": "webpack-dev-server --config=config/webpack.dev.js --hot",
     "start:reload": "webpack-dev-server --config=config/webpack.dev.js",
@@ -20,9 +21,12 @@
     "antd": "^3.8.0",
     "axios": "^0.19.0",
     "babel-polyfill": "6.0.16",
+    "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "moment": "^2.22.2",
+    "path": "^0.12.7",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
