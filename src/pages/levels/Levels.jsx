@@ -1,64 +1,110 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Breadcrumb, Collapse, Modal, Input, Checkbox, Select } from 'antd';
+import { Row, Col, Button, Collapse, Modal, Input, Checkbox, Select, Popconfirm } from 'antd';
 
 import EditableTableLevels from '../../assets/components/EditableTableLevels';
 import api from '../../services/api';
 
 const { Panel } = Collapse;
 
-// const text = (
-//   <p style={{ paddingLeft: 24 }}>
-//     Qual a tradução de "Red"?
-//   </p>
-// );
-
-// const text2 = (
-//   <p style={{ paddingLeft: 24 }}>
-//     Qual a tradução de "Blue"?
-//   </p>
-// );
-
 class Levels extends Component {
   state = { 
-    // visible: false, 
-    // visibleTest: false,
+    visibleStudy: false, 
+    visibleTest: false,
+    visibleStudyError: false,
+    visibleTestError: false,
     contentId: 0,
     selectedTheme: 0,
+    selectedLevel: 0,
     content: [],
     levels: [],
     themes: [],
+    input: '',
+    inputWord: '',
+    inputTranslation: '',
+    inputQuestion: '',
+    inputAnswerOne: '',
+    inputAnswerTwo: '',
+    inputAnswerThree: '',
+    inputAnswerFour: '',
+    inputAnswerFive: '',
   };
 
-  // showModal = () => {
-  //   this.setState({
-  //     visible: true,
-  //   });
-  // };
+  showStudyCRUD = () => {
+    this.setState({
+      visibleStudy: true,
+    });
+  };
 
-  // showTest = () => {
-  //   this.setState({
-  //     visibleTest: true,
-  //   });
-  // };
+  showTestCRUD = () => {
+    this.setState({
+      visibleTest: true,
+    });
+  };
 
-  // handleOk = (e) => {
-  //   console.log(e);
-  //   this.setState({
-  //     visible: false,
-  //     visibleTest: false,
-  //   });
-  // };
+  handleStudyOk = (e) => {
+    if (this.state.inputWord.length > 1 && this.state.inputTranslation.length > 1 && this.state.selectedLevel > 0) {
+      api.post(`/studies`, {
+        word: this.state.inputWord,
+        translation: this.state.inputTranslation,
+        contentId: this.state.contentId,
+        levelId: this.state.selectedLevel
+      })
+      .then((response) => {
+        this.resetStates();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    } else {
+      this.handleVisibleStudyError(true);
+    }
+  };
 
-  // handleCancel = (e) => {
-  //   console.log(e);
-  //   this.setState({
-  //     visible: false,
-  //     visibleTest: false,
-  //   });
-  // };
+  handleTestOk = (e) => {
+    if (this.state.inputQuestion.length > 1 && this.state.inputAnswerOne.length > 1 && this.state.inputAnswerTwo.length > 1
+      && this.state.inputAnswerThree.length > 1 && this.state.inputAnswerFour.length > 1 && this.state.inputAnswerFive.length > 1) {
+      console.log("Handle Test OK! " , e);
+      console.log(this.state.inputQuestion);
+      console.log(this.state.inputAnswerOne);
+      console.log(this.state.inputAnswerTwo);
+      console.log(this.state.inputAnswerThree);
+      console.log(this.state.inputAnswerFour);
+      console.log(this.state.inputAnswerFive);
+    } else {
+      this.handleVisibleTestError(true);
+    }
+  };
+
+  handleCancel = (e) => {
+    console.log(e);
+    this.resetStates();
+  };
+
+  resetStates = () => {
+    this.setState({
+      selectedLevel: 0,
+      visibleStudy: false,
+      visibleTest: false,
+      inputWord: '',
+      inputTranslation: '',
+    });
+  }
+
+  handleVisibleStudyError = visibleStudyError => {
+    this.setState({
+      visibleStudyError,
+    })
+  };
+
+  handleVisibleTestError = visibleTestError => {
+    this.setState({
+      visibleTestError,
+    })
+  };
 
   componentDidMount() {
-    const id = this.props.history.location.contentId;
+    const splitPathName = this.props.history.location.pathname.split("/");
+    const id = splitPathName[splitPathName.length - 1];
     this.setState({ contentId: id });
 
     api.get(`/levels`)
@@ -73,6 +119,7 @@ class Levels extends Component {
       .then((response) => {
         this.setState({ content: response.data });
         this.setState({ selectedTheme: response.data.theme.id });
+        this.setState({ input: response.data.name });
       })
       .catch((error) => {
         console.log(error);
@@ -89,14 +136,63 @@ class Levels extends Component {
     });
   }
 
+  handleInput = (event) => {
+    this.setState({ input: event.target.value });
+  }
+
+  handleInputWord = (event) => {
+    this.setState({ inputWord: event.target.value });
+  }
+
+  handleInputTranslation = (event) => {
+    this.setState({ inputTranslation: event.target.value });
+  }
+
+  handleInputQuestion = (event) => {
+    this.setState({ inputQuestion: event.target.value });
+  }
+
+  handleInputAnswerOne = (event) => {
+    this.setState({ inputAnswerOne: event.target.value });
+  }
+
+  handleInputAnswerTwo = (event) => {
+    this.setState({ inputAnswerTwo: event.target.value });
+  }
+
+  handleInputAnswerThree = (event) => {
+    this.setState({ inputAnswerThree: event.target.value });
+  }
+
+  handleInputAnswerFour = (event) => {
+    this.setState({ inputAnswerFour: event.target.value });
+  }
+
+  handleInputAnswerFive = (event) => {
+    this.setState({ inputAnswerFive: event.target.value });
+  }
+
+  handleSave = () => {
+    api.put(`/contents/${this.state.contentId}`, {
+      name: this.state.input,
+      themeId: this.state.selectedTheme
+    })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
+
   render() {
       return (
         <div>
           <Row gutter={16}>
-            <Col span={16}>
+            <Col span={14}>
               <Input
-                value={this.state.content.name}
-                // onChange={this.handleInput}
+                value={this.state.input}
+                onChange={this.handleInput}
               />
             </Col>
             <Col span={5}>
@@ -108,11 +204,9 @@ class Levels extends Component {
                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 value={this.state.selectedTheme}
-                // onChange={(e) => {
-                //   this.setState({ selectedTheme: e }, () => {
-                //     this.handleChangeOnTheme(this.state.selectedTheme);
-                //   });
-                // }}
+                onChange={(e) => {
+                  this.setState({ selectedTheme: e });
+                }}
               >
                 {this.state.themes.map((theme) => 
                   <Option value={theme.id}>{theme.themeName}</Option>
@@ -120,7 +214,15 @@ class Levels extends Component {
               </Select>
             </Col>
             <Col span={1}>
-              <Button type="primary" shape="circle" icon="save" onClick={this.handleAdd}/>
+              <Popconfirm title="Confirma a edição?" onConfirm={() => this.handleSave()}>
+                <Button type="primary" shape="circle" icon="save" />
+              </Popconfirm>
+            </Col>
+            <Col span={1}>
+              <Button type="primary" shape="circle" icon="edit" onClick={this.showStudyCRUD}/>
+            </Col>
+            <Col span={1}>
+              <Button type="primary" shape="circle" icon="book" onClick={this.showTestCRUD}/>
             </Col>
           </Row>
 
@@ -134,119 +236,123 @@ class Levels extends Component {
             </Col>
           </Row>
 
+
+          <Modal
+            visible={this.state.visibleStudy}
+            onOk={this.handleStudyOk}
+            onCancel={this.handleCancel}
+            okText='Salvar'
+            cancelText='Cancelar'
+          >
+            <Input placeholder="Word" className="input" onChange={this.handleInputWord} value={this.state.inputWord} />
+            <Input placeholder="Translation" className="input" onChange={this.handleInputTranslation} value={this.state.inputTranslation} />
+            <Select
+                showSearch
+                style={{ width: 200 }}
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                onChange={(e) => {
+                  this.setState({ selectedLevel: e });
+                }}
+                placeholder="Selecione uma dificuldade"
+                className="input"
+              >
+                {this.state.levels.map((level) => 
+                  <Option value={level.id}>{level.name}</Option>
+                )}
+              </Select>
+          </Modal>
+
+
+          <Modal
+            visible={this.state.visibleTest}
+            onOk={this.handleTestOk}
+            onCancel={this.handleCancel}
+            okText='Salvar'
+            cancelText='Cancelar'
+            width={980}
+          >
+            <Row gutter={16}>
+              <Col span={24}>
+                <Input placeholder="Question" className="input" onChange={this.handleInputQuestion} value={this.state.inputQuestion} />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={1}>
+                <Checkbox className="checkbox" />
+              </Col>
+              <Col span={23}>
+                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerOne} value={this.state.inputAnswerOne} />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={1}>
+                <Checkbox className="checkbox" />
+              </Col>
+              <Col span={23}>
+                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerTwo} value={this.state.inputAnswerTwo} />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={1}>
+                <Checkbox className="checkbox" />
+              </Col>
+              <Col span={23}>
+                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerThree} value={this.state.inputAnswerThree} />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={1}>
+                <Checkbox className="checkbox" />
+              </Col>
+              <Col span={23}>
+                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerFour} value={this.state.inputAnswerFour} />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={1}>
+                <Checkbox className="checkbox" />
+              </Col>
+              <Col span={23}>
+                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerFive} value={this.state.inputAnswerFive} />
+              </Col>
+            </Row>
+          </Modal>
+
+
+          <Modal
+            title="Erro ao criar conteúdo para estudo"
+            visible={this.state.visibleStudyError}
+            closable={false}
+            footer={[
+              <Button key="ok" type="primary" onClick={() => this.handleVisibleStudyError(false)}>
+                Ok
+              </Button>,
+            ]}
+          >
+            <p>Não foi possível criar o conteúdo para estudo.</p>
+            <p>Preencha corretamente todos os campos.</p>
+          </Modal>
+
+          <Modal
+            title="Erro ao criar teste"
+            visible={this.state.visibleTestError}
+            closable={false}
+            footer={[
+              <Button key="ok" type="primary" onClick={() => this.handleVisibleTestError(false)}>
+                Ok
+              </Button>,
+            ]}
+          >
+            <p>Não foi possível criar o teste.</p>
+            <p>Preencha corretamente todos os campos.</p>
+          </Modal>
+
         </div>
       
-      
-    // return (
-    //   <div>
-    //     <Row gutter={16}>
-    //       <Col span={20}>
-    //         <Breadcrumb separator=">">
-    //           <Breadcrumb.Item>Home</Breadcrumb.Item>
-    //           <Breadcrumb.Item href="">Vocabulário</Breadcrumb.Item>
-    //           <Breadcrumb.Item href="">Partes da Aeronave</Breadcrumb.Item>
-    //         </Breadcrumb>,
-    //       </Col>
-    //       <Col span={1}>
-    //         <Button type="primary" shape="circle" icon="highlight" onClick={this.showModal} />
-    //       </Col>
-    //       <Col span={1}>
-    //         <Button type="primary" shape="circle" icon="snippets" onClick={this.showModal} />
-    //       </Col>
-    //       <Col span={2}>
-    //         <Button type="primary" shape="circle" icon="pie-chart" onClick={this.showTest} />
-    //       </Col>
-    //     </Row>
-        
-          // <Panel header="Estude" key="1">
-          //   <EditableTableLevels />
-          // </Panel>
-    //       <Panel header="Treine" key="2">
-    //         <EditableTableLevels />
-    //       </Panel>
-    //       <Panel header="Teste" key="3">
-    //         <Row gutter={16}>
-    //           <Col span={20}>
-    //             {text}
-    //           </Col>
-    //           <Col span={1}>
-    //             <Button type="twoTone" shape="circle" icon="edit" />
-    //           </Col>
-    //         </Row>
-    //         <hr />
-    //         <Row gutter={16}>
-    //           <Col span={20}>
-    //             {text2}
-    //           </Col>
-    //           <Col span={1}>
-    //             <Button type="twoTone" shape="circle" icon="edit" />
-    //           </Col>
-    //         </Row>
-    //         <hr />
-    //       </Panel>
-    //     </Collapse>
-    //     <Modal
-    //       visible={this.state.visible}
-    //       onOk={this.handleOk}
-    //       onCancel={this.handleCancel}
-    //     >
-    //       <Input placeholder="Word" className="input" />
-    //       <Input placeholder="Translation" className="input" />
-    //     </Modal>
-    //     <Modal
-    //       visible={this.state.visibleTest}
-    //       onOk={this.handleOk}
-    //       onCancel={this.handleCancel}
-    //       width={980}
-    //     >
-    //       <Row gutter={16}>
-    //         <Col span={24}>
-    //           <Input placeholder="Question" className="input" />
-    //         </Col>
-    //       </Row>
-    //       <Row gutter={16}>
-    //         <Col span={1}>
-    //           <Checkbox className="checkbox" />
-    //         </Col>
-    //         <Col span={23}>
-    //           <Input placeholder="Answer" className="input" />
-    //         </Col>
-    //       </Row>
-    //       <Row gutter={16}>
-    //         <Col span={1}>
-    //           <Checkbox className="checkbox" />
-    //         </Col>
-    //         <Col span={23}>
-    //           <Input placeholder="Answer" className="input" />
-    //         </Col>
-    //       </Row>
-    //       <Row gutter={16}>
-    //         <Col span={1}>
-    //           <Checkbox className="checkbox" />
-    //         </Col>
-    //         <Col span={23}>
-    //           <Input placeholder="Answer" className="input" />
-    //         </Col>
-    //       </Row>
-    //       <Row gutter={16}>
-    //         <Col span={1}>
-    //           <Checkbox className="checkbox" />
-    //         </Col>
-    //         <Col span={23}>
-    //           <Input placeholder="Answer" className="input" />
-    //         </Col>
-    //       </Row>
-    //       <Row gutter={16}>
-    //         <Col span={1}>
-    //           <Checkbox className="checkbox" />
-    //         </Col>
-    //         <Col span={23}>
-    //           <Input placeholder="Answer" className="input" />
-    //         </Col>
-    //       </Row>
-    //     </Modal>
-    //   </div>
-    // );
+        //   <EditableTableLevels />
     );
   }
 }

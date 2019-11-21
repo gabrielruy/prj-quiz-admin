@@ -41,8 +41,7 @@ class TableContent extends React.Component {
 
   showContentCrud = (id) => {
     this.props.history.push({
-      pathname: '/levels', 
-      contentId: id
+      pathname: `/levels/${id}`, 
     });
   }
 

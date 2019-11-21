@@ -52,7 +52,7 @@ const Main = () => (
                 <PrivateRoute exact path="/" component={Home} />
                 <PrivateRoute exact path="/themes" component={Themes} />
                 <PrivateRoute exact path="/contents" component={Contents} />
-                <PrivateRoute exact path="/levels" component={Levels} />
+                <PrivateRoute exact path="/levels/:id" component={Levels} />
                 <PrivateRoute component={NotFound} />
               </Switch>
             </Content>
