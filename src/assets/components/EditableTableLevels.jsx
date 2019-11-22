@@ -1,5 +1,7 @@
 import React from 'react';
-import { Table, Button, Popconfirm, Form, Input } from 'antd';
+import { Table, Button, Popconfirm, Form, Input, Modal } from 'antd';
+
+import api from '../../services/api';
 
 const EditableContext = React.createContext();
 
@@ -26,13 +28,13 @@ class EditableCell extends React.Component {
   };
 
   save = (e) => {
-    const { record, handleSave } = this.props;
+    const { record, handleCellSave } = this.props;
     this.form.validateFields((error, values) => {
       if (error && error[e.currentTarget.id]) {
         return;
       }
       this.toggleEdit();
-      handleSave({ ...record, ...values });
+      handleCellSave({ ...record, ...values });
     });
   };
 
@@ -46,7 +48,7 @@ class EditableCell extends React.Component {
           rules: [
             {
               required: true,
-              message: `${title} is required.`,
+              message: `${title} é obrigatório.`,
             },
           ],
           initialValue: record[dataIndex],
@@ -70,7 +72,7 @@ class EditableCell extends React.Component {
       title,
       record,
       index,
-      handleSave,
+      handleCellSave,
       children,
       ...restProps
     } = this.props;
@@ -91,72 +93,97 @@ class EditableTableLevels extends React.Component {
     super(props);
     this.columns = [
       {
+        title: 'Palavra / Conteúdo',
         dataIndex: 'word',
         width: '40%',
         editable: true,
       },
       {
+        title: 'Tradução / Dica',
         dataIndex: 'translation',
         width: '40%',
         editable: true,
       },
       {
-        dataIndex: 'edition',
-        render: (text, record) =>
-          (this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Confirma a edição?" onConfirm={() => this.handleDelete(record.key)}>
-              <Button shape="circle" icon="edit" theme="twoTone" />
-            </Popconfirm>
-          ) : null),
+        dataIndex: 'operation',
+        render: (text, record) => (
+          <Popconfirm title="Confirma a edição?" onConfirm={() => this.handleAdd(record)}>
+              <Button shape="circle" icon="save" theme="twoTone" />
+          </Popconfirm>
+        )
       },
       {
-        dataIndex: 'operation',
-        render: (text, record) =>
-          (this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Confirma a deleção?" onConfirm={() => this.handleDelete(record.key)}>
-              <Button shape="circle" icon="delete" theme="twoTone" />
-            </Popconfirm>
-          ) : null),
+        dataIndex: 'deletion',
+        render: (text, record) => (
+          <Popconfirm title="Confirma a deleção?" onConfirm={() => this.handleDelete(record.id)}>
+            <Button shape="circle" icon="delete" theme="twoTone" />
+          </Popconfirm>
+        )
       },
     ];
 
     this.state = {
       dataSource: [],
+      visibleError: false,
     };
   }
 
   componentDidMount() {
-    console.log("editable table levels - teste state: " , this.state.dataSource);
+    api.get(`/studies?contentId=${this.props.contentId}&levelId=${this.props.levelId}`)
+      .then((response) => {
+        this.setState({ dataSource: response.data });
+      })
+      .catch((error) => {
+        console.log(error);
+    });
   }
 
-  handleDelete = (key) => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-  };
+  handleDataSource = (dataSource) => {
+    this.setState({ dataSource });
+  }
 
-  handleAdd = () => {
-    const { count, dataSource } = this.state;
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: 32,
-      address: `London, Park Lane no. ${count}`,
-    };
-    this.setState({
-      dataSource: [...dataSource, newData],
-      count: count + 1,
+  handleAdd = (row) => {
+    api.put(`/studies/${row.id}`, {
+      contentId: row.contentId,
+      levelId: row.levelId,
+      word: row.word,
+      translation: row.translation
+    })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+      this.handleVisibleError(true);
     });
   };
 
-  handleSave = (row) => {
+  handleDelete = (id) => {
+    api.delete(`/studies/${id}`)
+      .then(() => {
+        this.handleDataSource(this.state.dataSource.filter(item => item.id !== id));
+      })
+      .catch(() => {
+        this.handleVisibleError(true);
+    });
+  };
+
+  handleVisibleError = visibleError => {
+    this.setState({
+      visibleError,
+    })
+  };
+
+  handleCellSave = (row) => {
     const newData = [...this.state.dataSource];
-    const index = newData.findIndex(item => row.key === item.key);
+    const index = newData.findIndex(item => row.id === item.id);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    this.setState({ dataSource: newData });
+
+    this.handleDataSource(newData);
   };
 
   render() {
@@ -178,19 +205,32 @@ class EditableTableLevels extends React.Component {
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
-          handleSave: this.handleSave,
+          handleCellSave: this.handleCellSave,
         }),
       };
     });
     return (
-      <div style={{ marginTop: '20px' }}>
+      <div style={{ marginTop: '10px' }}>
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
           bordered
           dataSource={dataSource}
           columns={columns}
+          pagination={false}
         />
+        <Modal
+          title="Erro ao editar/deletar"
+          visible={this.state.visibleError}
+          closable={false}
+          footer={[
+            <Button key="ok" type="primary" onClick={() => this.handleVisibleError(false)}>
+              Ok
+            </Button>,
+          ]}
+        >
+          <p>Não foi possível editar/deletar o conteúdo de estudo.</p>
+        </Modal>
       </div>
     );
   }

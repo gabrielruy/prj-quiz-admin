@@ -24,10 +24,6 @@ class Levels extends Component {
     inputTranslation: '',
     inputQuestion: '',
     inputTest: [],
-    studyBeginner: [],
-    studyBasic: [],
-    studyIntermediate: [],
-    studyAdvanced: [],
   };
 
   showStudyCRUD = () => {
@@ -159,24 +155,6 @@ class Levels extends Component {
       .catch(error => {
         console.log(error);
     });
-
-    api.get(`/studies?contentId=${id}`)
-      .then((response) => {
-        response.data.forEach(study => {
-          if (study.levelId == 1) {
-            this.state.studyBasic.push(study);
-          } else if (study.levelId == 2) {
-            this.state.studyBeginner.push(study);
-          } else if (study.levelId == 3) {
-            this.state.studyIntermediate.push(study);
-          } else if (study.levelId == 4) {
-            this.state.studyAdvanced.push(study);
-          }
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-    });
   }
 
   handleInput = (event) => {
@@ -269,12 +247,12 @@ class Levels extends Component {
                     <Collapse bordered={true} className="input">
                       <Panel header={"Estudo"} key={0}>
                         { level.id == 1
-                          ? <EditableTableLevels dataSource={this.state.studyBeginner} />
+                          ? <EditableTableLevels contentId={this.state.contentId} levelId={level.id} />
                           : ( level.id == 2
-                            ? <EditableTableLevels dataSource={this.state.studyBasic} />
+                            ? <EditableTableLevels contentId={this.state.contentId} levelId={level.id} />
                             : ( level.id == 3
-                              ? <EditableTableLevels dataSource={this.state.studyIntermediate} />
-                              : <EditableTableLevels dataSource={this.state.studyAdvanced} />
+                              ? <EditableTableLevels contentId={this.state.contentId} levelId={level.id} />
+                              : <EditableTableLevels contentId={this.state.contentId} levelId={level.id} />
                             )
                           )
                         }

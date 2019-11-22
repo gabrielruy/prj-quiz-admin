@@ -136,8 +136,7 @@ class EditableTableTheme extends React.Component {
       name: row.name
     })
     .then((response) => {
-      this.setState({input: ''});
-      this.handleSearch();
+      console.log(response);
     })
     .catch((error) => {
       console.log(error);
