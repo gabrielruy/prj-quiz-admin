@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Collapse, Modal, Input, Checkbox, Select, Popconfirm } from 'antd';
+import { Row, Col, Button, Collapse, Modal, Input, Select, Popconfirm, Radio } from 'antd';
 
 import EditableTableLevels from '../../assets/components/EditableTableLevels';
 import api from '../../services/api';
@@ -14,7 +14,8 @@ class Levels extends Component {
     visibleTestError: false,
     contentId: 0,
     selectedTheme: 0,
-    selectedLevel: 0,
+    selectedLevelStudy: undefined,
+    selectedLevelTest: undefined,
     content: [],
     levels: [],
     themes: [],
@@ -22,11 +23,11 @@ class Levels extends Component {
     inputWord: '',
     inputTranslation: '',
     inputQuestion: '',
-    inputAnswerOne: '',
-    inputAnswerTwo: '',
-    inputAnswerThree: '',
-    inputAnswerFour: '',
-    inputAnswerFive: '',
+    inputTest: [],
+    studyBeginner: [],
+    studyBasic: [],
+    studyIntermediate: [],
+    studyAdvanced: [],
   };
 
   showStudyCRUD = () => {
@@ -42,12 +43,12 @@ class Levels extends Component {
   };
 
   handleStudyOk = (e) => {
-    if (this.state.inputWord.length > 1 && this.state.inputTranslation.length > 1 && this.state.selectedLevel > 0) {
+    if (this.state.inputWord.length > 1 && this.state.inputTranslation.length > 1 && this.state.selectedLevelStudy) {
       api.post(`/studies`, {
         word: this.state.inputWord,
         translation: this.state.inputTranslation,
         contentId: this.state.contentId,
-        levelId: this.state.selectedLevel
+        levelId: this.state.selectedLevelStudy
       })
       .then((response) => {
         this.resetStates();
@@ -61,15 +62,26 @@ class Levels extends Component {
   };
 
   handleTestOk = (e) => {
-    if (this.state.inputQuestion.length > 1 && this.state.inputAnswerOne.length > 1 && this.state.inputAnswerTwo.length > 1
-      && this.state.inputAnswerThree.length > 1 && this.state.inputAnswerFour.length > 1 && this.state.inputAnswerFive.length > 1) {
-      console.log("Handle Test OK! " , e);
-      console.log(this.state.inputQuestion);
-      console.log(this.state.inputAnswerOne);
-      console.log(this.state.inputAnswerTwo);
-      console.log(this.state.inputAnswerThree);
-      console.log(this.state.inputAnswerFour);
-      console.log(this.state.inputAnswerFive);
+    if (this.isValidTestArray(this.state.inputTest) && this.state.selectedRadio && this.state.selectedLevelTest) {
+      const answer = this.state.inputTest[this.state.selectedRadio - 1];
+
+      api.post(`/tests`, {
+        question: this.state.inputQuestion,
+        option1: this.state.inputTest[0],
+        option2: this.state.inputTest[1],
+        option3: this.state.inputTest[2],
+        option4: this.state.inputTest[3],
+        option5: this.state.inputTest[4],
+        answer: answer,
+        contentId: this.state.contentId,
+        levelId: this.state.selectedLevelTest
+      })
+      .then((response) => {
+        this.resetStates();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     } else {
       this.handleVisibleTestError(true);
     }
@@ -80,13 +92,26 @@ class Levels extends Component {
     this.resetStates();
   };
 
+  isValidTestArray(array) {
+    for(let i=0; i<5; i++){
+      if(array[i] && array[i].length < 2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   resetStates = () => {
     this.setState({
-      selectedLevel: 0,
+      selectedLevelStudy: undefined,
+      selectedLevelTest: undefined,
       visibleStudy: false,
       visibleTest: false,
       inputWord: '',
       inputTranslation: '',
+      inputQuestion: '',
+      selectedRadio: undefined,
+      inputTest: [],
     });
   }
 
@@ -134,6 +159,24 @@ class Levels extends Component {
       .catch(error => {
         console.log(error);
     });
+
+    api.get(`/studies?contentId=${id}`)
+      .then((response) => {
+        response.data.forEach(study => {
+          if (study.levelId == 1) {
+            this.state.studyBasic.push(study);
+          } else if (study.levelId == 2) {
+            this.state.studyBeginner.push(study);
+          } else if (study.levelId == 3) {
+            this.state.studyIntermediate.push(study);
+          } else if (study.levelId == 4) {
+            this.state.studyAdvanced.push(study);
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+    });
   }
 
   handleInput = (event) => {
@@ -152,24 +195,15 @@ class Levels extends Component {
     this.setState({ inputQuestion: event.target.value });
   }
 
-  handleInputAnswerOne = (event) => {
-    this.setState({ inputAnswerOne: event.target.value });
+  handleInputTest = (position, event) => {
+    const newInputTest = this.state.inputTest.slice();
+    newInputTest[position - 1] = event.target.value
+    this.setState({ inputTest: newInputTest });
   }
 
-  handleInputAnswerTwo = (event) => {
-    this.setState({ inputAnswerTwo: event.target.value });
-  }
-
-  handleInputAnswerThree = (event) => {
-    this.setState({ inputAnswerThree: event.target.value });
-  }
-
-  handleInputAnswerFour = (event) => {
-    this.setState({ inputAnswerFour: event.target.value });
-  }
-
-  handleInputAnswerFive = (event) => {
-    this.setState({ inputAnswerFive: event.target.value });
+  onChangeRadio = e => {
+    this.setState({ selectedRadio: e.target.value });
+    console.log("Selected value on radio: " , e.target.value);
   }
 
   handleSave = () => {
@@ -230,7 +264,26 @@ class Levels extends Component {
             <Col span={22}>
               <Collapse bordered={false} className="input">
                 {this.state.levels.map((level) => 
-                  <Panel header={level.name} key={level.id}></Panel>
+                  <Panel header={level.name} key={level.id}>
+                    
+                    <Collapse bordered={true} className="input">
+                      <Panel header={"Estudo"} key={0}>
+                        { level.id == 1
+                          ? <EditableTableLevels dataSource={this.state.studyBeginner} />
+                          : ( level.id == 2
+                            ? <EditableTableLevels dataSource={this.state.studyBasic} />
+                            : ( level.id == 3
+                              ? <EditableTableLevels dataSource={this.state.studyIntermediate} />
+                              : <EditableTableLevels dataSource={this.state.studyAdvanced} />
+                            )
+                          )
+                        }
+                      </Panel>
+                      <Panel header={"Teste"} key={1}>
+                        {/* <EditableTableLevels /> */}
+                      </Panel>
+                    </Collapse>
+                  </Panel>
                 )}
               </Collapse>
             </Col>
@@ -254,8 +307,9 @@ class Levels extends Component {
                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 onChange={(e) => {
-                  this.setState({ selectedLevel: e });
+                  this.setState({ selectedLevelStudy: e });
                 }}
+                value={this.state.selectedLevelStudy}
                 placeholder="Selecione uma dificuldade"
                 className="input"
               >
@@ -279,46 +333,66 @@ class Levels extends Component {
                 <Input placeholder="Question" className="input" onChange={this.handleInputQuestion} value={this.state.inputQuestion} />
               </Col>
             </Row>
-            <Row gutter={16}>
-              <Col span={1}>
-                <Checkbox className="checkbox" />
-              </Col>
-              <Col span={23}>
-                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerOne} value={this.state.inputAnswerOne} />
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={1}>
-                <Checkbox className="checkbox" />
-              </Col>
-              <Col span={23}>
-                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerTwo} value={this.state.inputAnswerTwo} />
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={1}>
-                <Checkbox className="checkbox" />
-              </Col>
-              <Col span={23}>
-                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerThree} value={this.state.inputAnswerThree} />
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={1}>
-                <Checkbox className="checkbox" />
-              </Col>
-              <Col span={23}>
-                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerFour} value={this.state.inputAnswerFour} />
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={1}>
-                <Checkbox className="checkbox" />
-              </Col>
-              <Col span={23}>
-                <Input placeholder="Answer" className="input" onChange={this.handleInputAnswerFive} value={this.state.inputAnswerFive} />
-              </Col>
-            </Row>
+            <Radio.Group onChange={this.onChangeRadio} value={this.state.selectedRadio}>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Radio className="checkbox" value={1} style={{width: '100%'}}>
+                    <Input placeholder="Answer" className="input" 
+                      value={this.state.inputTest[0]} onChange={(event) => {this.handleInputTest(1, event)}} />
+                  </Radio>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Radio className="checkbox" value={2} style={{width: '100%'}}>
+                    <Input placeholder="Answer" className="input" 
+                      value={this.state.inputTest[1]} onChange={(event) => {this.handleInputTest(2, event)}} />
+                  </Radio>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Radio className="checkbox" value={3} style={{width: '100%'}}>
+                    <Input placeholder="Answer" className="input" 
+                      value={this.state.inputTest[2]} onChange={(event) => {this.handleInputTest(3, event)}} />
+                  </Radio>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Radio className="checkbox" value={4} style={{width: '100%'}}>
+                    <Input placeholder="Answer" className="input" 
+                      value={this.state.inputTest[3]} onChange={(event) => {this.handleInputTest(4, event)}} />
+                  </Radio>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Radio className="checkbox" value={5} style={{width: '100%'}}>
+                    <Input placeholder="Answer" className="input" 
+                      value={this.state.inputTest[4]} onChange={(event) => {this.handleInputTest(5, event)}} />
+                  </Radio>
+                </Col>
+              </Row>
+            </Radio.Group>
+            <Select
+                showSearch
+                style={{ width: 200 }}
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                onChange={(e) => {
+                  this.setState({ selectedLevelTest: e });
+                }}
+                value={this.state.selectedLevelTest}
+                placeholder="Selecione uma dificuldade"
+                className="input"
+              >
+                {this.state.levels.map((level) => 
+                  <Option value={level.id}>{level.name}</Option>
+                )}
+              </Select>
           </Modal>
 
 
@@ -351,8 +425,6 @@ class Levels extends Component {
           </Modal>
 
         </div>
-      
-        //   <EditableTableLevels />
     );
   }
 }

@@ -91,16 +91,17 @@ class EditableTableLevels extends React.Component {
     super(props);
     this.columns = [
       {
-        dataIndex: 'name',
+        dataIndex: 'word',
         width: '40%',
         editable: true,
       },
       {
         dataIndex: 'translation',
         width: '40%',
+        editable: true,
       },
       {
-        dataIndex: 'operation',
+        dataIndex: 'edition',
         render: (text, record) =>
           (this.state.dataSource.length >= 1 ? (
             <Popconfirm title="Confirma a edição?" onConfirm={() => this.handleDelete(record.key)}>
@@ -120,25 +121,12 @@ class EditableTableLevels extends React.Component {
     ];
 
     this.state = {
-      dataSource: [
-        {
-          key: '0',
-          name: 'Red',
-          translation: 'Vermelho',
-        },
-        {
-          key: '1',
-          name: 'Blue',
-          translation: 'Azul',
-        },
-        {
-          key: '2',
-          name: 'Yellow',
-          translation: 'Amarelo',
-        },
-      ],
-      count: 2,
+      dataSource: [],
     };
+  }
+
+  componentDidMount() {
+    console.log("editable table levels - teste state: " , this.state.dataSource);
   }
 
   handleDelete = (key) => {
