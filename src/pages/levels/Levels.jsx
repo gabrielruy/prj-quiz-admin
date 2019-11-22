@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Button, Collapse, Modal, Input, Select, Popconfirm, Radio } from 'antd';
 
 import EditableTableLevels from '../../assets/components/EditableTableLevels';
+import TableQuestion from '../../assets/components/TableQuestion';
 import api from '../../services/api';
 
 const { Panel } = Collapse;
@@ -258,7 +259,16 @@ class Levels extends Component {
                         }
                       </Panel>
                       <Panel header={"Teste"} key={1}>
-                        {/* <EditableTableLevels /> */}
+                        { level.id == 1
+                          ? <TableQuestion contentId={this.state.contentId} levelId={level.id} />
+                          : ( level.id == 2
+                            ? <TableQuestion contentId={this.state.contentId} levelId={level.id} />
+                            : ( level.id == 3
+                              ? <TableQuestion contentId={this.state.contentId} levelId={level.id} />
+                              : <TableQuestion contentId={this.state.contentId} levelId={level.id} />
+                            )
+                          )
+                        }
                       </Panel>
                     </Collapse>
                   </Panel>
