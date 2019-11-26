@@ -322,50 +322,30 @@ class Levels extends Component {
               </Col>
             </Row>
             <Radio.Group onChange={this.onChangeRadio} value={this.state.selectedRadio}>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Radio className="checkbox" value={1} style={{width: '100%'}}>
-                    <Input placeholder="Answer" className="input" 
-                      value={this.state.inputTest[0]} onChange={(event) => {this.handleInputTest(1, event)}} />
-                  </Radio>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Radio className="checkbox" value={2} style={{width: '100%'}}>
-                    <Input placeholder="Answer" className="input" 
-                      value={this.state.inputTest[1]} onChange={(event) => {this.handleInputTest(2, event)}} />
-                  </Radio>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Radio className="checkbox" value={3} style={{width: '100%'}}>
-                    <Input placeholder="Answer" className="input" 
-                      value={this.state.inputTest[2]} onChange={(event) => {this.handleInputTest(3, event)}} />
-                  </Radio>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Radio className="checkbox" value={4} style={{width: '100%'}}>
-                    <Input placeholder="Answer" className="input" 
-                      value={this.state.inputTest[3]} onChange={(event) => {this.handleInputTest(4, event)}} />
-                  </Radio>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Radio className="checkbox" value={5} style={{width: '100%'}}>
-                    <Input placeholder="Answer" className="input" 
-                      value={this.state.inputTest[4]} onChange={(event) => {this.handleInputTest(5, event)}} />
-                  </Radio>
-                </Col>
-              </Row>
+                <Radio className="checkbox" value={1} className="test-crud" >
+                  <Input placeholder="Answer" className="input" 
+                    value={this.state.inputTest[0]} onChange={(event) => {this.handleInputTest(1, event)}} />
+                </Radio>
+                <Radio className="checkbox" value={2} className="test-crud" >
+                  <Input placeholder="Answer" className="input" 
+                    value={this.state.inputTest[1]} onChange={(event) => {this.handleInputTest(2, event)}} />
+                </Radio>
+                <Radio className="checkbox" value={3} className="test-crud" >
+                  <Input placeholder="Answer" className="input" 
+                    value={this.state.inputTest[2]} onChange={(event) => {this.handleInputTest(3, event)}} />
+                </Radio>
+                <Radio className="checkbox" value={4} className="test-crud" >
+                  <Input placeholder="Answer" className="input" 
+                    value={this.state.inputTest[3]} onChange={(event) => {this.handleInputTest(4, event)}} />
+                </Radio>
+                <Radio className="checkbox" value={5} className="test-crud" >
+                  <Input placeholder="Answer" className="input" 
+                    value={this.state.inputTest[4]} onChange={(event) => {this.handleInputTest(5, event)}} />
+                </Radio>
             </Radio.Group>
             <Select
                 showSearch
-                style={{ width: 200 }}
+                style={{ width: 905, marginLeft: '30px' }}
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

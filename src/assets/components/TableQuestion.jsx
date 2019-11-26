@@ -215,46 +215,26 @@ class TableQuestion extends React.Component {
             </Col>
           </Row>
           <Radio.Group  value={this.state.selectedRadio} onChange={this.onChangeRadio}>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Radio className="checkbox" value={1} style={{width: '100%'}}>
-                  <Input placeholder="Answer" className="input" 
-                    value={this.state.selectedQuestion.option1} onChange={(event) => {this.handleInputTest(1, event)}} />
-                </Radio>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Radio className="checkbox" value={2} style={{width: '100%'}}>
-                  <Input placeholder="Answer" className="input" 
-                    value={this.state.selectedQuestion.option2} onChange={(event) => {this.handleInputTest(2, event)}} />
-                </Radio>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Radio className="checkbox" value={3} style={{width: '100%'}}>
-                  <Input placeholder="Answer" className="input" 
-                    value={this.state.selectedQuestion.option3} onChange={(event) => {this.handleInputTest(3, event)}} />
-                </Radio>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Radio className="checkbox" value={4} style={{width: '100%'}}>
-                  <Input placeholder="Answer" className="input" 
-                    value={this.state.selectedQuestion.option4} onChange={(event) => {this.handleInputTest(4, event)}} />
-                </Radio>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Radio className="checkbox" value={5} style={{width: '100%'}}>
-                  <Input placeholder="Answer" className="input" 
-                    value={this.state.selectedQuestion.option5} onChange={(event) => {this.handleInputTest(5, event)}} />
-                </Radio>
-              </Col>
-            </Row>
+              <Radio className="checkbox" value={1} className="test-crud" >
+                <Input placeholder="Answer" className="input" 
+                  value={this.state.selectedQuestion.option1} onChange={(event) => {this.handleInputTest(1, event)}} />
+              </Radio>
+              <Radio className="checkbox" value={2} className="test-crud" >
+                <Input placeholder="Answer" className="input" 
+                  value={this.state.selectedQuestion.option2} onChange={(event) => {this.handleInputTest(2, event)}} />
+              </Radio>
+              <Radio className="checkbox" value={3} className="test-crud" >
+                <Input placeholder="Answer" className="input" 
+                  value={this.state.selectedQuestion.option3} onChange={(event) => {this.handleInputTest(3, event)}} />
+              </Radio>
+              <Radio className="checkbox" value={4} className="test-crud" >
+                <Input placeholder="Answer" className="input" 
+                  value={this.state.selectedQuestion.option4} onChange={(event) => {this.handleInputTest(4, event)}} />
+              </Radio>
+              <Radio className="checkbox" value={5} className="test-crud" >
+                <Input placeholder="Answer" className="input" 
+                  value={this.state.selectedQuestion.option5} onChange={(event) => {this.handleInputTest(5, event)}} />
+              </Radio>
           </Radio.Group>
         </Modal>
 
