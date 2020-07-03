@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Icon, Menu, Badge } from 'antd';
+import { Layout, Icon, Menu } from 'antd';
 import throttle from 'lodash.throttle';
 
 const { Sider } = Layout;
@@ -66,6 +66,12 @@ class SidebarComponent extends Component {
             <NavLink to="/contents">
               <Icon type="desktop" />
               <span>Conteúdo</span>
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item>
+            <NavLink to="/reports">
+              <Icon type="file" />
+              <span>Relatórios</span>
             </NavLink>
           </Menu.Item>
         </Menu>

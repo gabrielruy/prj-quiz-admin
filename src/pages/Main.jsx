@@ -19,6 +19,7 @@ import Contents from './contents/Contents';
 import Levels from './levels/Levels';
 import NotFound from './notFound/NotFound';
 import SignIn from './signIn/SignIn';
+import Reports from './reports/Reports';
 
 import { isAuthenticated } from '../services/auth';
 import '../assets/styles/styles.css';
@@ -53,6 +54,7 @@ const Main = () => (
                 <PrivateRoute exact path="/themes" component={Themes} />
                 <PrivateRoute exact path="/contents" component={Contents} />
                 <PrivateRoute exact path="/levels/:id" component={Levels} />
+                <PrivateRoute exact path="/reports" component={Reports} />
                 <PrivateRoute component={NotFound} />
               </Switch>
             </Content>
